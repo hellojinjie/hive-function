@@ -9,7 +9,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.JavaStringObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;
 
-@Description(value="__FUNC__ get appType from deviceType and appType. "
+@Description(value="_FUNC_ get appType from deviceType and appType. "
         + "Some message miss appType field, we need to determine the appType from deviceType", 
         name="determineAppType")
 public class UDFDetermineAppType extends GenericUDF {
@@ -19,7 +19,7 @@ public class UDFDetermineAppType extends GenericUDF {
     @Override
     public Object evaluate(DeferredObject[] arg0) throws HiveException {
         if (arg0.length != 2) {
-            throw new UDFArgumentLengthException("Determine App Type take two arguments, "
+            throw new UDFArgumentLengthException("_FUNC_ take two arguments, "
                     + "first is the deviceType, second is the appType");
         }
         String deviceType = stringInspector.getPrimitiveJavaObject(arg0[0].get());
