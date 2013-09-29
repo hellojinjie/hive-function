@@ -94,6 +94,9 @@ public class GenericUDAFCdnBytesLoaded implements GenericUDAFResolver2 {
 
         @Override
         public void merge(AggregationBuffer agg, Object partial) throws HiveException {
+            if (partial == null) {
+                return;
+            }
             CdnAggregationBuffer buffer = (CdnAggregationBuffer) agg;
             @SuppressWarnings("unchecked")
             Map<String, Long> bytesLoaded = (Map<String, Long>) inputOI.getMap(partial);
