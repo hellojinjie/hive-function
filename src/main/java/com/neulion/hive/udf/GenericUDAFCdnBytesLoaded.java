@@ -85,7 +85,9 @@ public class GenericUDAFCdnBytesLoaded implements GenericUDAFResolver2 {
         @Override
         public void iterate(AggregationBuffer agg, Object[] parameters)
                 throws HiveException {
-            merge(agg, parameters[0]);
+            if (parameters.length == 1 && parameters[0] != null) {
+                merge(agg, parameters[0]);
+            }
         }
 
         @Override
