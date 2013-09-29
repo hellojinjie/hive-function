@@ -49,6 +49,7 @@ public class GenericUDAFCdnBytesLoaded implements GenericUDAFResolver2 {
         private Map<String, String> cdnPatterns;
         
         {
+            cdnPatterns = Maps.newHashMap();
             cdnPatterns.put("cdnl3nl", "Level3");
             cdnPatterns.put("cdnak", "Akamai");
             cdnPatterns.put("cndllnwnl", "LimeLight");
