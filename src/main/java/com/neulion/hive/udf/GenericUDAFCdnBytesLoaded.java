@@ -100,34 +100,38 @@ public class GenericUDAFCdnBytesLoaded implements GenericUDAFResolver2 {
             if (partial == null) {
                 return;
             }
-            CdnAggregationBuffer buffer = (CdnAggregationBuffer) agg;
-            @SuppressWarnings("unchecked")
-            Map<String, Long> bytesLoaded = (Map<String, Long>) inputOI.getMap(partial);
-            for (String key : bytesLoaded.keySet()) {
-                boolean matched = false;
-                for (String pattern : cdnPatterns.keySet()) {
-                    if (key.contains(pattern)) {
-                        String cdnName = cdnPatterns.get(pattern);
-                        Long loaded = buffer.bytesLoaded.get(cdnName);
+            try {
+                CdnAggregationBuffer buffer = (CdnAggregationBuffer) agg;
+                @SuppressWarnings("unchecked")
+                Map<String, Long> bytesLoaded = (Map<String, Long>) inputOI.getMap(partial);
+                for (String key : bytesLoaded.keySet()) {
+                    boolean matched = false;
+                    for (String pattern : cdnPatterns.keySet()) {
+                        if (key.contains(pattern)) {
+                            String cdnName = cdnPatterns.get(pattern);
+                            Long loaded = buffer.bytesLoaded.get(cdnName);
+                            if (loaded == null) {
+                                loaded = bytesLoaded.get(key);
+                            } else {
+                                loaded = loaded > bytesLoaded.get(key) ? loaded : bytesLoaded.get(key);
+                            }
+                            buffer.bytesLoaded.put(cdnName, loaded);
+                            matched = true;
+                            break;
+                        }
+                    }
+                    if (matched == false) {
+                        Long loaded = buffer.bytesLoaded.get(key);
                         if (loaded == null) {
                             loaded = bytesLoaded.get(key);
                         } else {
                             loaded = loaded > bytesLoaded.get(key) ? loaded : bytesLoaded.get(key);
                         }
-                        buffer.bytesLoaded.put(cdnName, loaded);
-                        matched = true;
-                        break;
+                        buffer.bytesLoaded.put(key, loaded);
                     }
                 }
-                if (matched == false) {
-                    Long loaded = buffer.bytesLoaded.get(key);
-                    if (loaded == null) {
-                        loaded = bytesLoaded.get(key);
-                    } else {
-                        loaded = loaded > bytesLoaded.get(key) ? loaded : bytesLoaded.get(key);
-                    }
-                    buffer.bytesLoaded.put(key, loaded);
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
