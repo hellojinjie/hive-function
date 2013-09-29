@@ -15,6 +15,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectIn
 public class UDFDetermineAppType extends GenericUDF {
 
     private JavaStringObjectInspector stringInspector;
+    private AppTypeMapping appTypeMapping;
     
     @Override
     public Object evaluate(DeferredObject[] arg0) throws HiveException {
@@ -25,7 +26,12 @@ public class UDFDetermineAppType extends GenericUDF {
         String deviceType = stringInspector.getPrimitiveJavaObject(arg0[0].get());
         String appType = stringInspector.getPrimitiveJavaObject(arg0[1].get());
         if ("".equals(appType)) {
-            return deviceType;
+            appType = appTypeMapping.get(deviceType);
+            if (appType == null) {
+                return "";
+            } else {
+                return appType;
+            }
         } else {
             return appType;
         }
@@ -38,6 +44,7 @@ public class UDFDetermineAppType extends GenericUDF {
 
     @Override
     public ObjectInspector initialize(ObjectInspector[] arg0) throws UDFArgumentException {
+        this.appTypeMapping = AppTypeMapping.getInstance();
         this.stringInspector = PrimitiveObjectInspectorFactory.javaStringObjectInspector;
         return PrimitiveObjectInspectorFactory.javaStringObjectInspector;
     }
