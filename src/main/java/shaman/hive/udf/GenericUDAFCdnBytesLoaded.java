@@ -97,14 +97,13 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                     for (String key : bytesLoaded.keySet()) {
                         boolean matched = false;
                         for (String pattern : cdnPatterns.keySet()) {
-                            if (key.toString().contains(pattern)) {
+                            if (key.contains(pattern)) {
                                 String cdnName = cdnPatterns.get(pattern);
                                 Long loaded = buffer.bytesLoaded.get(cdnName);
                                 if (loaded == null) {
-                                    loaded = bytesLoaded.get(key.toString());
+                                    loaded = bytesLoaded.get(key);
                                 } else {
-                                    loaded = loaded > bytesLoaded.get(key.toString()) ? loaded
-                                            : bytesLoaded.get(key.toString());
+                                    loaded = loaded > bytesLoaded.get(key) ? loaded : bytesLoaded.get(key);
                                 }
                                 buffer.bytesLoaded.put(cdnName, loaded);
                                 matched = true;
@@ -114,12 +113,11 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                         if (matched == false) {
                             Long loaded = buffer.bytesLoaded.get(key);
                             if (loaded == null) {
-                                loaded = bytesLoaded.get(key.toString());
+                                loaded = bytesLoaded.get(key);
                             } else {
-                                loaded = loaded > bytesLoaded.get(key.toString()) ? loaded
-                                        : bytesLoaded.get(key.toString());
+                                loaded = loaded > bytesLoaded.get(key) ? loaded : bytesLoaded.get(key);
                             }
-                            buffer.bytesLoaded.put(key.toString(), loaded);
+                            buffer.bytesLoaded.put(key, loaded);
                         }
                     }
                 } catch (Exception e) {
@@ -149,10 +147,9 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                             String cdnName = cdnPatterns.get(pattern);
                             Long loaded = buffer.bytesLoaded.get(cdnName);
                             if (loaded == null) {
-                                loaded = bytesLoaded.get(key.toString()).get();
+                                loaded = bytesLoaded.get(key).get();
                             } else {
-                                loaded = loaded > bytesLoaded.get(key.toString()).get() ? loaded
-                                        : bytesLoaded.get(key.toString()).get();
+                                loaded = loaded > bytesLoaded.get(key).get() ? loaded : bytesLoaded.get(key).get();
                             }
                             buffer.bytesLoaded.put(cdnName, loaded);
                             matched = true;
@@ -162,15 +159,9 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                     if (matched == false) {
                         Long loaded = buffer.bytesLoaded.get(key);
                         if (loaded == null) {
-                            LongWritable l = bytesLoaded.get(key.toString());
-                            if (l == null) {
-                                loaded = 0l;
-                            } else {
-                                loaded = bytesLoaded.get(key.toString()).get();
-                            }
+                            loaded = bytesLoaded.get(key).get();
                         } else {
-                            loaded = loaded > bytesLoaded.get(key.toString()).get() ? loaded
-                                    : bytesLoaded.get(key.toString()).get();
+                            loaded = loaded > bytesLoaded.get(key).get() ? loaded : bytesLoaded.get(key).get();
                         }
                         buffer.bytesLoaded.put(key.toString(), loaded);
                     }
@@ -184,7 +175,6 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
         public Object terminate(AggregationBuffer agg) throws HiveException {
             for (Map.Entry<String, Long> entry : ((CdnAggregationBuffer) agg).bytesLoaded.entrySet()) {
                 result.put(new Text(entry.getKey()), new LongWritable(entry.getValue()));
-                System.err.println(entry.toString());
             }
             return result;
         }
