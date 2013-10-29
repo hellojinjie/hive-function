@@ -54,10 +54,12 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
         
         {
             cdnPatterns = Maps.newHashMap();
+            /* Do we really need to convert the CDN info here?
             cdnPatterns.put("cdnl3nl", "Level3");
             cdnPatterns.put("cdnak", "Akamai");
-            cdnPatterns.put("cndllnwnl", "LimeLight");
+            cdnPatterns.put("cdnllnwnl", "LimeLight");
             cdnPatterns.put("cdncd", "CDNetworks");
+            */
         }
         
         @Override
