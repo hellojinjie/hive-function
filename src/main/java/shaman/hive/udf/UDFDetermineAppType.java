@@ -11,7 +11,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectIn
 
 @Description(value="_FUNC_ get appType from deviceType and appType. "
         + "Some message miss appType field, we need to determine the appType from deviceType", 
-        name="determineAppType")
+        name="shaman_apptype")
 public class UDFDetermineAppType extends GenericUDF {
 
     private JavaStringObjectInspector stringInspector;
