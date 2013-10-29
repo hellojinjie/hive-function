@@ -15,6 +15,8 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorUtils;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorUtils.ObjectInspectorCopyOption;
 import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
 
 import com.google.common.collect.Maps;
 
@@ -86,7 +88,39 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
         public void iterate(AggregationBuffer agg, Object[] parameters)
                 throws HiveException {
             if (parameters.length == 1 && parameters[0] != null) {
-                merge(agg, parameters[0]);
+                try {
+                    CdnAggregationBuffer buffer = (CdnAggregationBuffer) agg;
+                    @SuppressWarnings("unchecked")
+                    Map<String, Long> bytesLoaded = (Map<String, Long>) inputOI.getMap(parameters[0]);
+                    for (String key : bytesLoaded.keySet()) {
+                        boolean matched = false;
+                        for (String pattern : cdnPatterns.keySet()) {
+                            if (key.contains(pattern)) {
+                                String cdnName = cdnPatterns.get(pattern);
+                                Long loaded = buffer.bytesLoaded.get(cdnName);
+                                if (loaded == null) {
+                                    loaded = bytesLoaded.get(key);
+                                } else {
+                                    loaded = loaded > bytesLoaded.get(key) ? loaded : bytesLoaded.get(key);
+                                }
+                                buffer.bytesLoaded.put(cdnName, loaded);
+                                matched = true;
+                                break;
+                            }
+                        }
+                        if (matched == false) {
+                            Long loaded = buffer.bytesLoaded.get(key);
+                            if (loaded == null) {
+                                loaded = bytesLoaded.get(key);
+                            } else {
+                                loaded = loaded > bytesLoaded.get(key) ? loaded : bytesLoaded.get(key);
+                            }
+                            buffer.bytesLoaded.put(key, loaded);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -103,17 +137,17 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
             try {
                 CdnAggregationBuffer buffer = (CdnAggregationBuffer) agg;
                 @SuppressWarnings("unchecked")
-                Map<String, Long> bytesLoaded = (Map<String, Long>) inputOI.getMap(partial);
-                for (String key : bytesLoaded.keySet()) {
+                Map<Text, LongWritable> bytesLoaded = (Map<Text, LongWritable>) inputOI.getMap(partial);
+                for (Text key : bytesLoaded.keySet()) {
                     boolean matched = false;
                     for (String pattern : cdnPatterns.keySet()) {
-                        if (key.contains(pattern)) {
+                        if (key.toString().contains(pattern)) {
                             String cdnName = cdnPatterns.get(pattern);
                             Long loaded = buffer.bytesLoaded.get(cdnName);
                             if (loaded == null) {
-                                loaded = bytesLoaded.get(key);
+                                loaded = bytesLoaded.get(key).get();
                             } else {
-                                loaded = loaded > bytesLoaded.get(key) ? loaded : bytesLoaded.get(key);
+                                loaded = loaded > bytesLoaded.get(key).get() ? loaded : bytesLoaded.get(key).get();
                             }
                             buffer.bytesLoaded.put(cdnName, loaded);
                             matched = true;
@@ -123,11 +157,11 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                     if (matched == false) {
                         Long loaded = buffer.bytesLoaded.get(key);
                         if (loaded == null) {
-                            loaded = bytesLoaded.get(key);
+                            loaded = bytesLoaded.get(key).get();
                         } else {
-                            loaded = loaded > bytesLoaded.get(key) ? loaded : bytesLoaded.get(key);
+                            loaded = loaded > bytesLoaded.get(key).get() ? loaded : bytesLoaded.get(key).get();
                         }
-                        buffer.bytesLoaded.put(key, loaded);
+                        buffer.bytesLoaded.put(key.toString(), loaded);
                     }
                 }
             } catch (Exception e) {
