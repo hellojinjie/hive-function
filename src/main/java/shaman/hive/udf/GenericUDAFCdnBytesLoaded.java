@@ -16,7 +16,6 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorUtils;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorUtils.ObjectInspectorCopyOption;
 import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.io.Text;
 
 import com.google.common.collect.Maps;
@@ -50,7 +49,6 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
         private MapObjectInspector inputOI;
         private MapObjectInspector outputOI;
         private Map<String, String> cdnPatterns;
-        private MapWritable result = new MapWritable();
         
         {
             cdnPatterns = Maps.newHashMap();
@@ -70,8 +68,10 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                         + "parameters length is not 1");
             }
             inputOI = (MapObjectInspector) parameters[0];
+            System.out.println(inputOI.getTypeName());
             outputOI = (MapObjectInspector) ObjectInspectorUtils
                     .getStandardObjectInspector(inputOI, ObjectInspectorCopyOption.JAVA);
+            System.out.println(outputOI.getTypeName());
             return outputOI;
         }
         
@@ -133,6 +133,10 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
             return ((CdnAggregationBuffer) agg).bytesLoaded;
         }
 
+        /**
+         * merge is called at reduce phase.
+         * But why inputOI.getMap change to return Map<Text, LongWritable>
+         */
         @Override
         public void merge(AggregationBuffer agg, Object partial) throws HiveException {
             if (partial == null) {
@@ -175,10 +179,7 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
 
         @Override
         public Object terminate(AggregationBuffer agg) throws HiveException {
-            for (Map.Entry<String, Long> entry : ((CdnAggregationBuffer) agg).bytesLoaded.entrySet()) {
-                result.put(new Text(entry.getKey()), new LongWritable(entry.getValue()));
-            }
-            return result;
+            return ((CdnAggregationBuffer) agg).bytesLoaded;
         }
         
     }
