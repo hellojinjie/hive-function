@@ -19,10 +19,6 @@ public class UDFDetermineAppType extends GenericUDF {
     
     @Override
     public Object evaluate(DeferredObject[] arg0) throws HiveException {
-        if (arg0.length != 2) {
-            throw new UDFArgumentLengthException("_FUNC_ take two arguments, "
-                    + "first is the deviceType, second is the appType");
-        }
         String deviceType = stringInspector.getPrimitiveJavaObject(arg0[0].get());
         String appType = stringInspector.getPrimitiveJavaObject(arg0[1].get());
         if ("".equals(appType)) {
@@ -44,6 +40,10 @@ public class UDFDetermineAppType extends GenericUDF {
 
     @Override
     public ObjectInspector initialize(ObjectInspector[] arg0) throws UDFArgumentException {
+        if (arg0.length != 2) {
+            throw new UDFArgumentLengthException("_FUNC_ take two arguments, "
+                    + "first is the deviceType, second is the appType");
+        }
         this.appTypeMapping = AppTypeMapping.getInstance();
         this.stringInspector = PrimitiveObjectInspectorFactory.javaStringObjectInspector;
         return PrimitiveObjectInspectorFactory.javaStringObjectInspector;
