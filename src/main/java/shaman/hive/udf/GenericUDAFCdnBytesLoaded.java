@@ -105,7 +105,7 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                                 if (loaded == null) {
                                     loaded = bytesLoaded.get(key);
                                 } else {
-                                    loaded = loaded > bytesLoaded.get(key) ? loaded : bytesLoaded.get(key);
+                                    loaded = loaded + bytesLoaded.get(key);
                                 }
                                 buffer.bytesLoaded.put(cdnName, loaded);
                                 matched = true;
@@ -117,7 +117,7 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                             if (loaded == null) {
                                 loaded = bytesLoaded.get(key);
                             } else {
-                                loaded = loaded > bytesLoaded.get(key) ? loaded : bytesLoaded.get(key);
+                                loaded = loaded + bytesLoaded.get(key);
                             }
                             buffer.bytesLoaded.put(key, loaded);
                         }
@@ -155,7 +155,7 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                             if (loaded == null) {
                                 loaded = bytesLoaded.get(key).get();
                             } else {
-                                loaded = loaded > bytesLoaded.get(key).get() ? loaded : bytesLoaded.get(key).get();
+                                loaded = loaded + bytesLoaded.get(key).get();
                             }
                             buffer.bytesLoaded.put(cdnName, loaded);
                             matched = true;
@@ -167,7 +167,7 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                         if (loaded == null) {
                             loaded = bytesLoaded.get(key).get();
                         } else {
-                            loaded = loaded > bytesLoaded.get(key).get() ? loaded : bytesLoaded.get(key).get();
+                            loaded = loaded + bytesLoaded.get(key).get();
                         }
                         buffer.bytesLoaded.put(key.toString(), loaded);
                     }
