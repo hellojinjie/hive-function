@@ -125,9 +125,9 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                 for (Text key : bytesLoaded.keySet()) {
                     Long loaded = buffer.bytesLoaded.get(key.toString());
                     if (loaded == null) {
-                        loaded = bytesLoaded.get(key.toString).get();
+                        loaded = bytesLoaded.get(key.toString()).get();
                     } else {
-                        loaded = loaded + bytesLoaded.get(key.toString).get();
+                        loaded = loaded + bytesLoaded.get(key.toString()).get();
                     }
                     buffer.bytesLoaded.put(key.toString(), loaded);
                 }
