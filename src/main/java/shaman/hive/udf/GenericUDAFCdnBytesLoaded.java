@@ -80,7 +80,7 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
         @Override
         public void iterate(AggregationBuffer agg, Object[] parameters)
                 throws HiveException {
-            if (parameters.length == 1 && parameters[0] != null) {
+            if (parameters.length > 1 && parameters[0] != null) {
                 try {
                     CdnAggregationBuffer buffer = (CdnAggregationBuffer) agg;
                     @SuppressWarnings("unchecked")
@@ -123,11 +123,11 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                 @SuppressWarnings("unchecked")
                 Map<Text, LongWritable> bytesLoaded = (Map<Text, LongWritable>) inputOI.getMap(partial);
                 for (Text key : bytesLoaded.keySet()) {
-                    Long loaded = buffer.bytesLoaded.get(key);
+                    Long loaded = buffer.bytesLoaded.get(key.toString());
                     if (loaded == null) {
-                        loaded = bytesLoaded.get(key).get();
+                        loaded = bytesLoaded.get(key.toString).get();
                     } else {
-                        loaded = loaded + bytesLoaded.get(key).get();
+                        loaded = loaded + bytesLoaded.get(key.toString).get();
                     }
                     buffer.bytesLoaded.put(key.toString(), loaded);
                 }
