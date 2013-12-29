@@ -97,15 +97,19 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                     @SuppressWarnings("unchecked")
                     Map<String, Long> bytesLoaded = (Map<String, Long>) inputOI.getMap(parameters[0]);
                     for (String key : bytesLoaded.keySet()) {
+                        Long bytes = bytesLoaded.get(key);
+                        if (bytes < 0) {
+                            continue;
+                        }
                         boolean matched = false;
                         for (String pattern : cdnPatterns.keySet()) {
                             if (key.contains(pattern)) {
                                 String cdnName = cdnPatterns.get(pattern);
                                 Long loaded = buffer.bytesLoaded.get(cdnName);
                                 if (loaded == null) {
-                                    loaded = bytesLoaded.get(key);
+                                    loaded = bytes;
                                 } else {
-                                    loaded = loaded + bytesLoaded.get(key);
+                                    loaded = loaded + bytes;
                                 }
                                 buffer.bytesLoaded.put(cdnName, loaded);
                                 matched = true;
@@ -115,9 +119,9 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                         if (matched == false) {
                             Long loaded = buffer.bytesLoaded.get(key);
                             if (loaded == null) {
-                                loaded = bytesLoaded.get(key);
+                                loaded = bytes;
                             } else {
-                                loaded = loaded + bytesLoaded.get(key);
+                                loaded = loaded + bytes;
                             }
                             buffer.bytesLoaded.put(key, loaded);
                         }
