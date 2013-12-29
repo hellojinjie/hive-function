@@ -80,7 +80,7 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
         @Override
         public void iterate(AggregationBuffer agg, Object[] parameters)
                 throws HiveException {
-            if (parameters.length > 1 && parameters[0] != null) {
+            if (parameters.length >= 1 && parameters[0] != null) {
                 try {
                     CdnAggregationBuffer buffer = (CdnAggregationBuffer) agg;
                     @SuppressWarnings("unchecked")
