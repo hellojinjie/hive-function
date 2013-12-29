@@ -84,9 +84,9 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                 try {
                     CdnAggregationBuffer buffer = (CdnAggregationBuffer) agg;
                     @SuppressWarnings("unchecked")
-                    Map<String, Long> bytesLoaded = (Map<String, Long>) inputOI.getMap(parameters[0]);
-                    for (String key : bytesLoaded.keySet()) {
-                        Long bytes = bytesLoaded.get(key);
+                    Map<String, Long> inputBytes = (Map<String, Long>) inputOI.getMap(parameters[0]);
+                    for (String key : inputBytes.keySet()) {
+                        Long bytes = inputBytes.get(key);
                         if (bytes < 0) {
                             continue;
                         }
@@ -121,13 +121,13 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
             try {
                 CdnAggregationBuffer buffer = (CdnAggregationBuffer) agg;
                 @SuppressWarnings("unchecked")
-                Map<Text, LongWritable> bytesLoaded = (Map<Text, LongWritable>) inputOI.getMap(partial);
-                for (Text key : bytesLoaded.keySet()) {
+                Map<Text, LongWritable> partialBytes = (Map<Text, LongWritable>) inputOI.getMap(partial);
+                for (Text key : partialBytes.keySet()) {
                     Long loaded = buffer.bytesLoaded.get(key.toString());
                     if (loaded == null) {
-                        loaded = bytesLoaded.get(key).get();
+                        loaded = partialBytes.get(key).get();
                     } else {
-                        loaded = loaded + bytesLoaded.get(key).get();
+                        loaded = loaded + partialBytes.get(key).get();
                     }
                     buffer.bytesLoaded.put(key.toString(), loaded);
                 }
