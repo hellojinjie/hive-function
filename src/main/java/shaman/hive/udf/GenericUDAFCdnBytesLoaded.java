@@ -48,17 +48,6 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
         
         private MapObjectInspector inputOI;
         private MapObjectInspector outputOI;
-        private Map<String, String> cdnPatterns;
-        
-        {
-            cdnPatterns = Maps.newHashMap();
-            /* Do we really need to convert the CDN info here?
-            cdnPatterns.put("cdnl3nl", "Level3");
-            cdnPatterns.put("cdnak", "Akamai");
-            cdnPatterns.put("cdnllnwnl", "LimeLight");
-            cdnPatterns.put("cdncd", "CDNetworks");
-            */
-        }
         
         @Override
         public ObjectInspector init(Mode m, ObjectInspector[] parameters) throws HiveException {
@@ -101,30 +90,13 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                         if (bytes < 0) {
                             continue;
                         }
-                        boolean matched = false;
-                        for (String pattern : cdnPatterns.keySet()) {
-                            if (key.contains(pattern)) {
-                                String cdnName = cdnPatterns.get(pattern);
-                                Long loaded = buffer.bytesLoaded.get(cdnName);
-                                if (loaded == null) {
-                                    loaded = bytes;
-                                } else {
-                                    loaded = loaded + bytes;
-                                }
-                                buffer.bytesLoaded.put(cdnName, loaded);
-                                matched = true;
-                                break;
-                            }
+                        Long loaded = buffer.bytesLoaded.get(key);
+                        if (loaded == null) {
+                            loaded = bytes;
+                        } else {
+                            loaded = loaded + bytes;
                         }
-                        if (matched == false) {
-                            Long loaded = buffer.bytesLoaded.get(key);
-                            if (loaded == null) {
-                                loaded = bytes;
-                            } else {
-                                loaded = loaded + bytes;
-                            }
-                            buffer.bytesLoaded.put(key, loaded);
-                        }
+                        buffer.bytesLoaded.put(key, loaded);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -151,30 +123,13 @@ public class GenericUDAFCdnBytesLoaded extends AbstractGenericUDAFResolver {
                 @SuppressWarnings("unchecked")
                 Map<Text, LongWritable> bytesLoaded = (Map<Text, LongWritable>) inputOI.getMap(partial);
                 for (Text key : bytesLoaded.keySet()) {
-                    boolean matched = false;
-                    for (String pattern : cdnPatterns.keySet()) {
-                        if (key.toString().contains(pattern)) {
-                            String cdnName = cdnPatterns.get(pattern);
-                            Long loaded = buffer.bytesLoaded.get(cdnName);
-                            if (loaded == null) {
-                                loaded = bytesLoaded.get(key).get();
-                            } else {
-                                loaded = loaded + bytesLoaded.get(key).get();
-                            }
-                            buffer.bytesLoaded.put(cdnName, loaded);
-                            matched = true;
-                            break;
-                        }
+                    Long loaded = buffer.bytesLoaded.get(key);
+                    if (loaded == null) {
+                        loaded = bytesLoaded.get(key).get();
+                    } else {
+                        loaded = loaded + bytesLoaded.get(key).get();
                     }
-                    if (matched == false) {
-                        Long loaded = buffer.bytesLoaded.get(key);
-                        if (loaded == null) {
-                            loaded = bytesLoaded.get(key).get();
-                        } else {
-                            loaded = loaded + bytesLoaded.get(key).get();
-                        }
-                        buffer.bytesLoaded.put(key.toString(), loaded);
-                    }
+                    buffer.bytesLoaded.put(key.toString(), loaded);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
