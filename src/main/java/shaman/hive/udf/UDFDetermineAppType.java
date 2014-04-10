@@ -9,6 +9,8 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.JavaStringObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;
 
+import shaman.hive.udf.service.AppTypeMapping;
+
 @Description(value="_FUNC_ get appType from deviceType and appType. "
         + "Some message miss appType field, we need to determine the appType from deviceType", 
         name="shaman_apptype")

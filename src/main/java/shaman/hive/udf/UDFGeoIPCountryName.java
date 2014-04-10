@@ -9,6 +9,8 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.JavaStringObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;
 
+import shaman.hive.udf.service.GeoService;
+
 @Description(name="shaman_geo_countryname", value="_FUNC_ get geo from ip. ")
 public class UDFGeoIPCountryName extends GenericUDF {
     

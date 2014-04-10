@@ -1,4 +1,4 @@
-package shaman.hive.udf;
+package shaman.hive.udf.service;
 
 import java.io.File;
 import java.io.IOException;
