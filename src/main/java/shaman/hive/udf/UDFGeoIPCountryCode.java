@@ -31,7 +31,6 @@ public class UDFGeoIPCountryCode extends GenericUDF {
     @Override
     public Object evaluate(DeferredObject[] arguments) throws HiveException {
         String ip = stringInspector.getPrimitiveJavaObject(arguments[0].get());
-        System.out.println(ip + " " + geoService.getCountryCode(ip) + " " + geoService.getCountryName(ip));
         return geoService.getCountryCode(ip);
     }
 
