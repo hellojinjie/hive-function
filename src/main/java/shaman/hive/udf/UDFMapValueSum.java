@@ -17,7 +17,11 @@ import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectIn
 public class UDFMapValueSum extends GenericUDF {
 
     private MapObjectInspector inputOI;
-    private ObjectInspector valueOI;
+    private PrimitiveObjectInspector valueOI;
+    
+    abstract class MapValueExtractor {
+        abstract long extract();
+    }
     
     @Override
     public ObjectInspector initialize(ObjectInspector[] arguments) throws UDFArgumentException {
@@ -25,7 +29,7 @@ public class UDFMapValueSum extends GenericUDF {
             throw new UDFArgumentLengthException("_FUNC_ take one arguments, map");
         }
         this.inputOI = (MapObjectInspector) arguments[0];
-        valueOI = inputOI.getMapValueObjectInspector();
+        valueOI = (PrimitiveObjectInspector) inputOI.getMapValueObjectInspector();
         return PrimitiveObjectInspectorFactory.javaLongObjectInspector;
     }
 
@@ -35,11 +39,8 @@ public class UDFMapValueSum extends GenericUDF {
         long result = 0l;
         Map<?, ?> map = inputOI.getMap(arguments[0].get());
         for (Object l : map.values()) {
-            valueOI.getCategory();
-            PrimitiveObjectInspector oi = PrimitiveObjectInspectorFactory.getPrimitiveObjectInspectorFromClass(valueOI.getClass());
-            System.out.println(oi);
-            System.out.println(valueOI.getCategory());
-            System.out.println(valueOI.getTypeName());
+            valueOI.getPrimitiveJavaObject(l);
+            result += Long.valueOf(valueOI.getPrimitiveJavaObject(l).toString());
         }
         return result;
     }
