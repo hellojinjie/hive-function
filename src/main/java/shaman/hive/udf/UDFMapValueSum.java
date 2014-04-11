@@ -40,7 +40,7 @@ public class UDFMapValueSum extends GenericUDF {
         Map<?, ?> map = inputOI.getMap(arguments[0].get());
         for (Object l : map.values()) {
             valueOI.getPrimitiveJavaObject(l);
-            result += Long.valueOf(valueOI.getPrimitiveJavaObject(l).toString());
+            result += valueOI.getPrimitiveJavaObject(l);
         }
         return result;
     }
