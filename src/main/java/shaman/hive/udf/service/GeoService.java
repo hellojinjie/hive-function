@@ -4,15 +4,22 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
+import com.maxmind.geoip2.model.CityIspOrgResponse;
+import com.maxmind.geoip2.model.CountryResponse;
 
 public class GeoService {
     
     private static class ResourceHolder {
         private static final GeoService geoService = new GeoService();
     }
+   
+    private Map<String, CountryResponse> countryCache = new HashMap<String, CountryResponse>();
+    private Map<String, CityIspOrgResponse> cityCache = new HashMap<String, CityIspOrgResponse>();
     
     private DatabaseReader reader;
     
@@ -31,7 +38,12 @@ public class GeoService {
     
     public String getCountryCode(String ip) {
         try {
-            return reader.country(InetAddress.getByName(ip)).getCountry().getIsoCode();
+            CountryResponse cr = countryCache.get(ip);
+            if (cr == null) {
+                cr = reader.country(InetAddress.getByName(ip));
+                countryCache.put(ip, cr);
+            }
+            return cr.getCountry().getIsoCode();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -44,7 +56,12 @@ public class GeoService {
     
     public String getCountryName(String ip) {
         try {
-            return reader.country(InetAddress.getByName(ip)).getCountry().getName();
+            CountryResponse cr = countryCache.get(ip);
+            if (cr == null) {
+                cr = reader.country(InetAddress.getByName(ip));
+                countryCache.put(ip, cr);
+            }
+            return cr.getCountry().getName();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -57,7 +74,12 @@ public class GeoService {
     
     public String getIsp(String ip) {
         try {
-            return reader.cityIspOrg(InetAddress.getByName(ip)).getTraits().getIsp();
+            CityIspOrgResponse ci = cityCache.get(ip);
+            if (ci == null) {
+                ci = reader.cityIspOrg(InetAddress.getByName(ip));
+                cityCache.put(ip, ci);
+            }
+            return ci.getTraits().getIsp();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
