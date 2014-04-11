@@ -39,8 +39,16 @@ public class UDFMapValueSum extends GenericUDF {
         long result = 0l;
         Map<?, ?> map = inputOI.getMap(arguments[0].get());
         for (Object l : map.values()) {
-            valueOI.getPrimitiveJavaObject(l);
-            result += valueOI.getPrimitiveJavaObject(l);
+            Object primitiveObject = valueOI.getPrimitiveJavaObject(l);
+            if (primitiveObject instanceof Integer) {
+                result += (Integer) primitiveObject;
+            } else if (primitiveObject instanceof Long) {
+                result += (Long) primitiveObject;
+            } else if (primitiveObject instanceof Short) {
+                result += (Short) primitiveObject;
+            } else {
+                throw new HiveException("can not cast " + primitiveObject);
+            }
         }
         return result;
     }
