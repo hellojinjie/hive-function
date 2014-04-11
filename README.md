@@ -24,7 +24,7 @@ create temporary function shaman_geo_isp as 'shaman.hive.udf.UDFGeoIPIsp';
 ````
 
 Example usage of map value sum
-=
+====
 ````
 add jar ./target/hive-function-1.0-SNAPSHOT.jar;
 create temporary function shaman_sum_mapvalue as 'shaman.hive.udf.UDFMapValueSum';
