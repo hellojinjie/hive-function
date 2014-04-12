@@ -19,10 +19,6 @@ public class UDFMapValueSum extends GenericUDF {
     private MapObjectInspector inputOI;
     private PrimitiveObjectInspector valueOI;
     
-    abstract class MapValueExtractor {
-        abstract long extract();
-    }
-    
     @Override
     public ObjectInspector initialize(ObjectInspector[] arguments) throws UDFArgumentException {
         if (arguments.length != 1) {
