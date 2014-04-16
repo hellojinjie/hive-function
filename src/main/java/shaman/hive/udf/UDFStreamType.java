@@ -43,8 +43,8 @@ public class UDFStreamType extends GenericUDF {
 
     @Override
     public ObjectInspector initialize(ObjectInspector[] arg0) throws UDFArgumentException {
-        if (arg0.length != 2) {
-            throw new UDFArgumentLengthException("_FUNC_ take one arguments, streamURL");
+        if (arg0.length != 1) {
+            throw new UDFArgumentLengthException("__FUNC__ take one arguments, streamURL");
         }
         this.stringInspector = PrimitiveObjectInspectorFactory.javaStringObjectInspector;
         return PrimitiveObjectInspectorFactory.javaIntObjectInspector;
