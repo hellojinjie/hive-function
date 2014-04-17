@@ -17,23 +17,17 @@ public class UDFStreamType extends GenericUDF {
     
     @Override
     public Object evaluate(DeferredObject[] arg0) throws HiveException {
-        String streamURL = stringInspector.getPrimitiveJavaObject(arg0[0]);
+        String streamURL = stringInspector.getPrimitiveJavaObject(arg0[0].get());
         
+        String streamType = "Live";
         if (streamURL.contains(".mp4") || streamURL.contains("vod"))
         {
-            if (streamURL.contains("live"))
+            if (!streamURL.contains("live"))
             {
-                return 0;
-            }
-            else
-            {
-                return 1;
+                streamType = "VOD";
             }
         }
-        else
-        {
-            return 0;
-        }
+        return streamType;
     }
 
     @Override
@@ -44,10 +38,10 @@ public class UDFStreamType extends GenericUDF {
     @Override
     public ObjectInspector initialize(ObjectInspector[] arg0) throws UDFArgumentException {
         if (arg0.length != 1) {
-            throw new UDFArgumentLengthException("__FUNC__ take one arguments, streamURL");
+            throw new UDFArgumentLengthException("__FUNC__ take one argument, streamURL");
         }
         this.stringInspector = PrimitiveObjectInspectorFactory.javaStringObjectInspector;
-        return PrimitiveObjectInspectorFactory.javaIntObjectInspector;
+        return this.stringInspector;
     }
     
 }
