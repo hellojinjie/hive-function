@@ -20,10 +20,8 @@ public class UDFStreamType extends GenericUDF {
         String streamURL = stringInspector.getPrimitiveJavaObject(arg0[0].get());
         
         String streamType = "Live";
-        if (streamURL.contains(".mp4") || streamURL.contains("vod"))
-        {
-            if (!streamURL.contains("live"))
-            {
+        if (streamURL.contains(".mp4") || streamURL.contains("vod")) {
+            if (!streamURL.contains("live")) {
                 streamType = "VOD";
             }
         }
